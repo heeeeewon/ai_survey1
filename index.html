@@ -39,6 +39,7 @@
 <button class="step" type="button" data-goto="3"><b>3</b>전달문·제출</button>
 </div>
 <div class="progress-meta"><span>필수 입력</span><span id="progressLabel">0 / 17</span></div><progress id="progress" max="17" value="0" aria-label="필수 입력 완료 정도"></progress>
+<div class="micro-actions"><button class="link-button" id="saveDraft" type="button">임시저장</button><button class="link-button" id="loadDraft" type="button">임시저장 불러오기</button></div>
 </aside>
 <div class="panel">
 <div class="errors" id="errors" role="alert" tabindex="-1" hidden></div>
@@ -69,7 +70,7 @@
 <div class="field"><label for="rewrite">수정 문장 예시 <span class="helper">선택</span></label><textarea id="rewrite" maxlength="1500" placeholder="연구문제 또는 가설의 수정 문장 예시가 필요한 경우 작성하시오. 최종 판단은 상대 조가 합니다."></textarea></div>
 </div>
 <details class="preview" id="previewDetails"><summary>상대 조에 전달될 내용 미리 보기</summary><div class="public-preview"><div id="previewContent" class="report"></div></div></details>
-<div class="submission-area" id="submissionArea" hidden><div id="onlineActions"><h3>교수자에게 온라인으로 제출하시오.</h3><p class="helper">입력 내용은 교수자가 설정한 Google 스프레드시트로 전송됩니다. 교수자가 공개를 승인한 피드백만 대상 조가 조회할 수 있습니다. 아래 코드는 피드백 문서에 포함되지 않습니다.</p><div class="field"><label for="accessCode">조별 코드 <span class="req">*</span></label><input id="accessCode" type="password" maxlength="120" autocomplete="off" spellcheck="false" placeholder="교수자가 조별로 제공한 코드"></div><div class="actions"><button class="btn primary" id="submitOnline" type="button">온라인 제출 · 새 탭에서 접수 확인</button></div><p class="helper">새 탭에 ‘접수 완료’와 접수번호가 표시되어야 제출이 완료됩니다. 원래 화면은 접수 여부를 자동 확인하지 않습니다.</p></div></div>
+<div class="submission-area" id="submissionArea" hidden><div id="onlineActions"><h3>교수자에게 온라인으로 제출하시오.</h3><p class="helper">입력 내용은 교수자가 설정한 Google 스프레드시트로 전송됩니다. 교수자가 공개를 승인한 피드백만 대상 조가 조회할 수 있습니다. 아래 코드는 피드백 문서에 포함되지 않습니다.</p><div class="field"><label for="accessCode">조별 코드 <span class="req">*</span></label><input id="accessCode" type="text" maxlength="120" autocomplete="off" spellcheck="false" placeholder="교수자가 조별로 제공한 코드"></div><div class="actions"><button class="btn primary" id="submitOnline" type="button">온라인 제출 · 새 탭에서 접수 확인</button></div><p class="helper">새 탭에 ‘접수 완료’와 접수번호가 표시되어야 제출이 완료됩니다. 원래 화면은 접수 여부를 자동 확인하지 않습니다.</p></div></div>
 <div class="step-footer"><button class="btn" type="button" data-back="2">이전</button><span class="helper">3 / 3 · 전달문·제출</span></div>
 </section>
 </form>
@@ -77,7 +78,7 @@
 </section>
 <section id="view-inbox" role="tabpanel" aria-labelledby="tab-inbox" hidden><div class="panel">
 <div class="section-head"><div><h2>받은 피드백 조회</h2></div></div>
-<div id="onlineInbox"><div class="field"><label for="inboxCode">조회 코드</label><input id="inboxCode" type="password" maxlength="120" autocomplete="off" placeholder="교수자가 조별로 제공한 코드를 입력하시오."></div><button class="btn primary" id="fetchInbox" type="button">피드백 조회</button></div>
+<div id="onlineInbox"><div class="field"><label for="inboxCode">조회 코드</label><input id="inboxCode" type="text" maxlength="120" autocomplete="off" placeholder="교수자가 조별로 제공한 코드를 입력하시오."></div><button class="btn primary" id="fetchInbox" type="button">피드백 조회</button></div>
 </div></section>
 <section id="view-guide" role="tabpanel" aria-labelledby="tab-guide" hidden><div class="panel">
 <div class="section-head"><div><h2>평가 착안점</h2></div></div>
@@ -104,6 +105,7 @@ const CONFIG = Object.freeze({
 });
 const CRITERIA = [{"id":"topic","title":"연구주제의 적절성과 범위","question":"연구의 필요성을 근거를 들어 설명하시오.","focus":["보건의료·건강행동·보건서비스 등 수업의 관심 영역과 연결되는가?","넓은 관심 주제에서 실제로 다룰 대상과 현상으로 범위를 좁혔는가?","연구할 필요성을 설명하되, 학부 프로젝트에 과도한 참신성을 요구하지 않는가?"],"teacher":"주제의 크기보다 문제의식과 범위 설정을 봅니다. “전혀 새로운 주제”인지보다 이 팀이 무엇을 알아보려는지 설명할 수 있는지가 중요합니다.","example":"예: 1쪽에서 지역과 연령을 제한하여 연구 범위가 명확하다. 다만 ‘건강 문제’가 구체적으로 어떤 현상을 의미하는지 추가 설명이 필요하다.","source":"1-2주차 12쪽; 2주차 3–9쪽"},{"id":"question","title":"연구문제의 구체성","question":"누구에게서 무엇의 차이·관계·현상을 알아보려는지 한 문장으로 이해되는지 확인하시오.","focus":["연구대상과 핵심 개념 또는 변수가 구체적으로 드러나는가?","자료로 답할 수 있는 질문이며, 단순한 주제명이나 가치판단에 머물지 않는가?","관계형이면 변수 간 관계, 비교형이면 비교집단, 실태 파악형이면 파악할 현상이 보이는가?"],"teacher":"모든 질문을 억지로 X–Y 관계형으로 바꾸지 않습니다. 제출한 연구문제의 유형에 맞춰 대상·현상·관계 또는 비교가 명확한지 확인합니다.","example":"예: 2쪽에서 연구대상은 대학생으로 명확하다. 다만 ‘AI 사용’이 사용시간을 의미하는지 사용목적을 의미하는지 구체화할 필요가 있다.","source":"2주차 3–9쪽, 31쪽"},{"id":"concept","title":"핵심 개념의 명확성","question":"중요한 용어를 이 연구에서 어떤 의미로 사용하는지 설명되어 있는지 확인하시오.","focus":["핵심 개념의 의미와 포함 범위를 팀의 연구 맥락에 맞게 정의했는가?","비슷하지만 다른 개념을 혼용하지 않는가?","여러 차원이 있는 개념이라면 필요한 하위차원을 구분했는가?"],"teacher":"개념화는 ‘무엇을 의미하는가’에 대한 설명입니다. 아직 최종 설문문항·척도·점수가 없다는 이유로 부족하다고 보지 않습니다. 하위차원도 필요한 경우에만 요구합니다.","example":"예: 3쪽에서는 ‘수면의 질’을 정의했으나 가설에는 ‘수면시간’이 제시되어 있다. 두 개념을 같은 의미로 사용하는지 확인하고 용어를 일치시킬 필요가 있다.","source":"3-1주차 3쪽; 2주차 12–15쪽"},{"id":"hypothesis","title":"연구가설의 적절성과 일관성","question":"가설이 연구문제에 대한 잠정적 답이며 개념화한 내용과 일치하는지 확인하시오.","focus":["연구문제와 가설의 대상·핵심 개념·관계가 서로 일치하는가?","관찰 가능한 자료로 검토할 수 있는 진술인가?","한 가설에 여러 관계를 과도하게 넣지 않았으며, 방향을 정했다면 설명할 근거가 있는가?"],"teacher":"방향성 가설만 정답으로 보지 않습니다. 근거에 맞는 무방향성 가설도 가능합니다. 탐색적 연구 등에서 가설을 두지 않았다면 과제 요구와의 관계를 확인하고, 동료가 임의로 면제하거나 0점 처리하지 않도록 합니다.","example":"예: 연구문제는 사용시간과 스트레스의 관계를 다루지만 가설에는 학업성취도가 제시되어 있다. 연구문제와 가설에서 결과 개념을 일치시킬 필요가 있다.","source":"2주차 24–30쪽, 35쪽"},{"id":"evidence","title":"선행연구와 가설의 연결","question":"어떤 연구 결과를 근거로 해당 가설을 도출했는지 확인하시오.","focus":["인용한 연구를 식별할 정보가 있으며, 실제 자료와 설명이 맞는지 확인할 수 있는가?","선행연구의 결과가 제시한 가설과 어떻게 연결되는지 설명했는가?","대상·개념·측정방식이 다른 연구를 같은 근거처럼 단순 연결하지 않았는가?"],"teacher":"문헌 수보다 연결 논리를 봅니다. 실제 출처 확인 여부와 아직 확인하지 못한 부분을 구분합니다. 모든 인용을 검증하지 못했다면 미확인 범위를 명시하고 오류라고 단정하지 않습니다.","example":"예: 근거로 제시한 연구는 사용시간이 아니라 사용목적을 다루고 있다. 현재 가설의 근거로 직접 적용할 수 있는지 확인하거나 두 연구의 차이를 설명할 필요가 있다.","source":"3-1주차 3쪽; 2주차 28쪽, 33–35쪽"},{"id":"ai","title":"AI 활용 및 인간의 검증·판단","question":"AI가 제안한 내용을 사람이 어떻게 확인·평가·수정·판단했는지 확인하시오.","focus":["결과 도출에 사용한 AI 프롬프트의 공유 링크 또는 안내된 기록이 제출되었는가?","AI가 제시한 선행연구·개념·관계·가설을 원문 또는 신뢰할 수 있는 근거와 대조해 확인했는가?","AI 제안을 그대로 받아들이지 않고 무엇을 수용·수정·배제했는지, 그 이유를 사람이 설명할 수 있는가?","최종 연구문제·개념화·가설에 대한 판단과 책임이 연구자에게 남아 있는가?"],"teacher":"AI 사용 여부 자체보다 인간의 평가·검증·판단을 봅니다.","example":"예: AI가 제안한 가설을 그대로 채택했는지 여부가 명확하지 않다. 제시된 논문의 원문을 확인한 뒤 무엇을 수용하거나 수정했는지 설명하면 판단 근거가 더 분명해진다.","source":"3-1주차 3쪽; 1-1주차 14쪽; 2주차 33쪽","optional":true,"badge":"선택 · 교수자 평가 항목"}];
 const SCHEMA='daejin.sprint1.feedback.v1';
+const DRAFT_KEY=CONFIG.courseId+'.browser-draft';
 const STATUS={clear:'충분',partial:'부분 충족',revise:'보완 필요'};
 const TEXT_FIELDS=['projectTitle','strength','clarification','suggestion','rewrite'];
 const ALL_FIELDS=['role','unit','fromTeam','toTeam',...TEXT_FIELDS,'priority'];
@@ -141,14 +143,39 @@ function reportText(r,recipientView=false){const d=r.feedback;let lines=[`${d.to
 function renderPreview(){$('previewContent').innerHTML=reportHTML(makeRecord('draft'));}
 function update(){syncRole();updateProgress();if(currentStep===3&&$('previewDetails').open)renderPreview();}
 function postNewTab(action,fields){const endpoint=endpointURL();if(!endpoint){flash('온라인 제출·조회 주소가 설정되지 않았습니다.',true);return;}const form=document.createElement('form');form.method='POST';form.action=endpoint;form.target='_blank';form.rel='noopener noreferrer';form.acceptCharset='UTF-8';for(const [name,value]of Object.entries({action,...fields})){const i=document.createElement('input');i.type='hidden';i.name=name;i.value=value;form.append(i);}document.body.append(form);form.submit();form.remove();}
+
+function saveDraftLocal(){
+  try{
+    const r=makeRecord('draft');
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(r));
+    flash('임시저장했습니다.');
+  }catch(e){
+    flash('임시저장에 실패했습니다. 브라우저 저장공간을 확인하시오.',true);
+  }
+}
+function loadDraftLocal(){
+  try{
+    const raw=localStorage.getItem(DRAFT_KEY);
+    if(!raw){flash('임시저장된 내용이 없습니다.',true);return;}
+    const r=normalize(JSON.parse(raw));
+    fillForm(r);
+    showView('write');
+    showStep(1,false);
+    flash('임시저장된 내용을 불러왔습니다.');
+  }catch(e){
+    flash('임시저장된 내용을 불러오지 못했습니다.',true);
+  }
+}
 function initEvents(){
+ $('saveDraft').addEventListener('click',saveDraftLocal);
+ $('loadDraft').addEventListener('click',loadDraftLocal);
  $('feedbackForm').addEventListener('submit',e=>e.preventDefault());$('feedbackForm').addEventListener('input',update);$('feedbackForm').addEventListener('change',update);
  for(const t of document.querySelectorAll('.tab')){t.addEventListener('click',()=>showView(t.dataset.view));t.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const ts=[...document.querySelectorAll('.tab')];let ix=ts.indexOf(t);ix=e.key==='Home'?0:e.key==='End'?ts.length-1:(ix+(e.key==='ArrowRight'?1:-1)+ts.length)%ts.length;showView(ts[ix].dataset.view);ts[ix].focus();});}
  for(const b of document.querySelectorAll('[data-goto]'))b.addEventListener('click',()=>{clearErrors();showStep(Number(b.dataset.goto));});
  for(const b of document.querySelectorAll('[data-next]'))b.addEventListener('click',()=>{if(validate(currentStep))showStep(Number(b.dataset.next));});for(const b of document.querySelectorAll('[data-back]'))b.addEventListener('click',()=>{clearErrors();showStep(Number(b.dataset.back));});
  $('previewDetails').addEventListener('toggle',()=>{if($('previewDetails').open)renderPreview();});
- $('submitOnline').addEventListener('click',()=>{if(!validate(0,true))return;const code=$('accessCode').value.trim();const r=makeRecord('prepared');postNewTab('submit',{access_code:code,payload:JSON.stringify(r)});$('accessCode').value='';flash('접수 확인용 새 탭을 열도록 요청했습니다. 이 화면에서는 접수 여부를 확인할 수 없습니다. 새 탭에 ‘접수 완료’와 접수번호가 표시되는지 확인하시오.',true);});
- $('fetchInbox').addEventListener('click',()=>{const code=$('inboxCode').value.trim();if(!code){flash('조회 코드를 입력하시오.',true);$('inboxCode').focus();return;}postNewTab('inbox',{access_code:code});$('inboxCode').value='';});
+ $('submitOnline').addEventListener('click',()=>{if(!validate(0,true))return;const code=$('accessCode').value.trim();const r=makeRecord('prepared');postNewTab('submit',{access_code:code,payload:JSON.stringify(r)});flash('접수 확인용 새 탭을 열도록 요청했습니다. 이 화면에서는 접수 여부를 확인할 수 없습니다. 새 탭에 ‘접수 완료’와 접수번호가 표시되는지 확인하시오.',true);});
+ $('fetchInbox').addEventListener('click',()=>{const code=$('inboxCode').value.trim();if(!code){flash('조회 코드를 입력하시오.',true);$('inboxCode').focus();return;}postNewTab('inbox',{access_code:code});});
 }
 initFields();initEvents();
 syncRole();updateProgress();
