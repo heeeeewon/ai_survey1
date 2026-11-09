@@ -19,7 +19,7 @@ const CRITERIA_V1 = [
   ['evidence','선행연구와 가설의 연결'], ['ai','AI 활용과 인간의 검증 및 판단']
 ];
 const CRITERIA_V2 = [
-  ['question','연구문제와 가설 및 수정 내용'], ['design','조사설계와 선택 근거'],
+  ['question','1차 스프린트 추가 의견'], ['design','조사설계와 선택 근거'],
   ['population','목표 모집단과 표집틀'], ['sampling','표본추출 단위와 방법 및 크기'],
   ['collection','자료수집방법과 선택 근거'], ['ai','AI 제안에 대한 판단과 기록']
 ];
@@ -110,7 +110,8 @@ function submit_(p) {
   if (course.sprint2) {
     if (!feedback.projectTitle || !feedback.strength || !feedback.clarification || !feedback.suggestion) throw new Error('필수 피드백 내용을 모두 작성하십시오.');
     if (!course.criteria.some(([key])=>key===feedback.priority)) throw new Error('우선 확인·보완할 영역을 선택하십시오.');
-    course.criteria.forEach(([key,title]) => {if (!feedback.criteria[key].comment) throw new Error(title+'의 근거 또는 질문을 작성하십시오.');});
+    // 1차 스프린트 추가 의견은 선택이며, 2차 검토 항목만 필수입니다.
+    course.criteria.filter(([key]) => key !== 'question').forEach(([key,title]) => {if (!feedback.criteria[key].comment) throw new Error(title+'의 근거 또는 질문을 작성하십시오.');});
   }
   const rec = {
     schema: course.sprint2 ? 'daejin.sprint2.feedback.v1' : 'daejin.sprint1.feedback.v1',
@@ -177,6 +178,7 @@ function inboxPage_(team,records,course) {
     const d=rec.feedback || {}, c=d.criteria || {};
     body+='<article><h2>'+esc_(d.projectTitle || '연구주제 미입력')+'</h2><h3>항목별 검토</h3>';
     course.criteria.forEach(([id,title])=>{
+      if (course.sprint2 && id === 'question' && !String((c[id] || {}).comment || '').trim()) return;
       body+='<h4>'+esc_(title)+'</h4><p>'+nl_((c[id] || {}).comment)+'</p>';
     });
     body+='<h3>잘한 점</h3><p>'+nl_(d.strength)+'</p><h3>확인할 점</h3><p>'+nl_(d.clarification)+'</p>';
