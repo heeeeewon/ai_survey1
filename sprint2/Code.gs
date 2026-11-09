@@ -3,6 +3,8 @@
  * setup()은 기존 Feedback 데이터와 Settings 조별 코드를 보존합니다.
  * 2차 제출물은 Feedback_Sprint2에 저장합니다.
  */
+// 웹 앱에서도 응답 저장소를 명시적으로 엽니다.
+const SPREADSHEET_ID = '15Zb7Suc_noQ2KYqUbu5VP4F6iwg1EXhZYk0sDNc7wro';
 const COURSE_ID = 'daejin-ai-survey-2026-sprint1';
 const COURSE_ID_2 = 'daejin-ai-survey-2026-sprint2';
 const GROUPS = ['1','2','3','4'];
@@ -23,7 +25,7 @@ const CRITERIA_V2 = [
 ];
 
 function setup() {
-  const ss = SpreadsheetApp.getActive();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   ensureSheet_(ss, FEEDBACK_SHEET, headers_(false));
   ensureSheet_(ss, FEEDBACK_SHEET_2, headers_(true));
   let settings = ss.getSheetByName(SETTINGS_SHEET);
@@ -114,7 +116,7 @@ function submit_(p) {
     schema: course.sprint2 ? 'daejin.sprint2.feedback.v1' : 'daejin.sprint1.feedback.v1',
     courseId:course.id, recordId:id, preparedAt:clean_(raw.preparedAt,50), feedback:feedback
   };
-  const ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName(course.sheet);
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID), sh = ss.getSheetByName(course.sheet);
   if (!sh) throw new Error('교수자가 먼저 setup()을 실행해야 합니다.');
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -151,7 +153,7 @@ function inbox_(p) {
   if (!team) throw new Error('조회 코드가 올바르지 않습니다.');
   // 기존 1차 HTML은 course_id를 보내지 않았으므로 기본값을 그대로 둡니다.
   const course = course_(String(p.course_id || COURSE_ID));
-  const sh = SpreadsheetApp.getActive().getSheetByName(course.sheet);
+  const sh = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(course.sheet);
   if (!sh || sh.getLastRow() < 2) return inboxPage_(team,[],course);
   const values = sh.getDataRange().getValues(), h = values[0].map(String);
   const ix = Object.fromEntries(h.map((name,i)=>[name,i]));
@@ -195,7 +197,7 @@ function receipt_(id,alreadyReceived) {
 function teamForCode_(code) {
   const target=String(code || '').trim();
   if (!target) return '';
-  const sh=SpreadsheetApp.getActive().getSheetByName(SETTINGS_SHEET);
+  const sh=SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SETTINGS_SHEET);
   if (!sh || sh.getLastRow()<2) throw new Error('교수자가 먼저 setup()을 실행해야 합니다.');
   const values=sh.getRange(2,1,sh.getLastRow()-1,2).getDisplayValues();
   const matches=values.filter(([team,saved])=>GROUPS.includes(String(team).trim()) && String(saved).trim()===target);
