@@ -207,7 +207,7 @@ function initFields() {
   }
   $('criteriaFields').innerHTML = REQUIRED_CRITERIA.map((c,i) => `<article class="rubric-item" aria-labelledby="heading-${c.id}"><div class="rubric-heading"><span class="rubric-no">${i+1}</span><div><h3 id="heading-${c.id}">${escapeHTML(c.title)}</h3><p>${escapeHTML(c.question)}</p></div></div><details><summary>착안점 자세히 보기</summary><ul>${c.focus.map(t=>`<li>${escapeHTML(t)}</li>`).join('')}</ul></details><div class="field"><label class="evidence-label" for="evidence-${c.id}">근거 또는 확인할 질문 <span class="req">*</span></label><textarea id="evidence-${c.id}" maxlength="1500" placeholder="${escapeHTML(c.example)}"></textarea></div></article>`).join('');
   $('sprint1CommentFields').innerHTML = `<div class="field"><label for="evidence-question">${escapeHTML(SPRINT1_COMMENT.title)} (선택)</label><textarea id="evidence-question" maxlength="1500" placeholder="${escapeHTML(SPRINT1_COMMENT.example)}"></textarea></div>`;
-  $('guideItems').innerHTML = REQUIRED_CRITERIA.map((c,i) => `<section class="guide-item"><h3>${i+1}. ${escapeHTML(c.title)}</h3><p>${escapeHTML(c.question)}</p><ul>${c.focus.map(t=>`<li>${escapeHTML(t)}</li>`).join('')}</ul><p class="source">수업 근거: ${escapeHTML(c.source)}</p></section>`).join('');
+  $('guideItems').innerHTML = REQUIRED_CRITERIA.map((c,i) => `<section class="guide-item"><h3>${i+1}. ${escapeHTML(c.title)}</h3><p>${escapeHTML(c.question)}</p><ul>${c.focus.map(t=>`<li>${escapeHTML(t)}</li>`).join('')}</ul></section>`).join('');
   if (!endpointURL()) {
     $('submitOnline').disabled = true; $('fetchInbox').disabled = true;
     flash('온라인 제출·조회 주소를 확인할 수 없습니다. 교수자에게 문의하시오.',true);
